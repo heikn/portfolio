@@ -180,9 +180,15 @@ export default function Home() {
                       Contact Me
                     </Button>
                   </Link>
-                  <Button size="lg" variant="outline">
-                    Resume
-                  </Button>
+                  <a
+                    href="/Heikki_Nieminen_CV_EN.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button size="lg" variant="outline">
+                      Resume
+                    </Button>
+                  </a>
                 </div>
               </div>
             </CardFooter>

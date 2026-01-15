@@ -206,7 +206,13 @@ export default function Projects() {
               <Link to="/contact">
                 <Button size="lg">Contact Me</Button>
               </Link>
-              <Button size="lg" variant="outline">Download Resume</Button>
+              <a
+                href="/Heikki_Nieminen_CV_EN.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button size="lg" variant="outline">Download Resume</Button>
+              </a>
             </CardFooter>
           </Card>
         </div>

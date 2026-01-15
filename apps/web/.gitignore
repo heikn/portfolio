@@ -13,6 +13,7 @@ dist
 dist-ssr
 *.local
 .env
+Heikki_Nieminen_CV_EN.pdf
 
 # Editor directories and files
 .vscode/*
