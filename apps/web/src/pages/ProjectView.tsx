@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Github, ExternalLink } from "lucide-react"
@@ -23,9 +23,47 @@ export default function ProjectView() {
   const { projectId } = useParams<{ projectId: string }>()
   const { data: project, isLoading, isError, error } = useProject(projectId)
 
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  const galleryImages = useMemo(() => {
+    if (!project) return []
+    return getProjectGalleryImages(project)
+  }, [project])
+
+  const openLightbox = (index: number) => {
+    if (!galleryImages.length) return
+    const safeIndex = ((index % galleryImages.length) + galleryImages.length) % galleryImages.length
+    setLightboxIndex(safeIndex)
+  }
+
+  const closeLightbox = () => setLightboxIndex(null)
+
+  const showPrev = () => {
+    if (lightboxIndex === null) return
+    openLightbox(lightboxIndex - 1)
+  }
+
+  const showNext = () => {
+    if (lightboxIndex === null) return
+    openLightbox(lightboxIndex + 1)
+  }
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [projectId])
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox()
+      if (e.key === "ArrowLeft") showPrev()
+      if (e.key === "ArrowRight") showNext()
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [lightboxIndex])
 
   if (isLoading) {
     return (
@@ -73,6 +111,79 @@ export default function ProjectView() {
   return (
     <div className="py-12 px-4">
       <div className="container mx-auto max-w-6xl">
+        {lightboxIndex !== null && galleryImages[lightboxIndex] ? (
+          <div
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image preview"
+            onClick={closeLightbox}
+          >
+            <div
+              className="relative w-full max-w-6xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={galleryImages[lightboxIndex].image.url}
+                alt={
+                  galleryImages[lightboxIndex].altText ??
+                  `${project.title} screenshot ${lightboxIndex + 1}`
+                }
+                className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+              />
+
+              {galleryImages.length > 1 ? (
+                <>
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={showPrev}
+                      aria-label="Previous image"
+                    >
+                      Prev
+                    </Button>
+                  </div>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={showNext}
+                      aria-label="Next image"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="rounded-md bg-black/50 text-white text-xs px-2 py-1">
+                        {lightboxIndex + 1} / {galleryImages.length}
+                      </span>
+                      <span className="max-w-[min(85vw,48rem)] rounded-md bg-black/50 text-white text-xs px-3 py-2 text-center">
+                        {galleryImages[lightboxIndex].altText ??
+                          `${project.title} screenshot ${lightboxIndex + 1}`}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+
+              <div className="absolute top-3 right-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={closeLightbox}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {/* Back Button */}
         <Link to="/projects" className="inline-block mb-8">
           <Button variant="ghost" size="sm">
@@ -119,17 +230,40 @@ export default function ProjectView() {
         </div>
 
         {/* Project Images */}
-        <div className="mb-12 space-y-6">
-          {getProjectGalleryImages(project).map((img, index) => (
-            <Card key={index} className="overflow-hidden">
-              <img
-                src={img.image.url}
-                alt={img.altText ?? `${project.title} screenshot ${index + 1}`}
-                className="w-full h-auto"
-              />
-            </Card>
-          ))}
-        </div>
+        {galleryImages.length ? (
+          <div className="mb-12">
+            <div className="text-center mb-4">
+              <h2 className="text-2xl font-bold">Screenshots</h2>
+              <p className="text-sm text-muted-foreground">
+                A few highlights from the application
+              </p>
+            </div>
+            <div className="mx-auto max-w-5xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {galleryImages.map((img, index) => (
+                  <button
+                    key={`${img.imageId}-${img.orderIndex}`}
+                    type="button"
+                    className="text-left cursor-pointer"
+                    onClick={() => openLightbox(index)}
+                    aria-label={`Open image ${index + 1}`}
+                  >
+                    <Card className="overflow-hidden">
+                      <div className="aspect-video bg-muted">
+                        <img
+                          src={img.image.url}
+                          alt={img.altText ?? `${project.title} screenshot ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    </Card>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {/* Project Details Grid */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
