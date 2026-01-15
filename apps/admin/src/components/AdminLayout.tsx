@@ -19,27 +19,27 @@ export default function AdminLayout() {
           <div className="flex w-full justify-center">
             <div className="flex h-14 w-3xl items-center px-6">
           <div className="flex min-w-0 flex-1 items-center gap-4">
-            <Link to="/" className="font-semibold tracking-tight">
+            <Link to="" className="font-semibold tracking-tight">
               Admin
             </Link>
 
             <nav className="flex items-center gap-1">
               <NavLink
-                to="/projects"
+                to="projects"
                 className={({ isActive }) =>
                   cn(navItemBase, isActive && "bg-accent text-accent-foreground")
                 }>
                 Projects
               </NavLink>
               <NavLink
-                to="/images"
+                to="images"
                 className={({ isActive }) =>
                   cn(navItemBase, isActive && "bg-accent text-accent-foreground")
                 }>
                 Images
               </NavLink>
               <NavLink
-                to="/tags"
+                to="tags"
                 className={({ isActive }) =>
                   cn(navItemBase, isActive && "bg-accent text-accent-foreground")
                 }>
@@ -53,7 +53,7 @@ export default function AdminLayout() {
               variant="outline"
               onClick={() => {
                 logout()
-                navigate("/login", { replace: true })
+                navigate("login", { replace: true })
               }}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout

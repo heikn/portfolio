@@ -42,7 +42,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
         ) : null}
       </div>
       <CardDescription className="line-clamp-3">
-        {project.description ?? ""}
+        {project.shortDescription ?? project.description ?? ""}
       </CardDescription>
     </CardHeader>
     <CardContent className="grow">

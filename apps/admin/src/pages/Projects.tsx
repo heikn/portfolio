@@ -38,7 +38,7 @@ export default function Projects() {
               github_url: null,
             })
 
-            navigate(`/projects/${created.slug}`)
+            navigate(`projects/${created.slug}`)
           }}
           disabled={createProject.isPending}>
           {createProject.isPending ? "Creating…" : "Add new"}
@@ -55,7 +55,7 @@ export default function Projects() {
             {projects.map((p) => (
               <div key={p.id} className="flex items-center justify-between gap-3 rounded-md border p-3">
                 <div className="min-w-0">
-                  <Link className="font-medium hover:underline" to={`/projects/${p.slug}`}>
+                  <Link className="font-medium hover:underline" to={`${p.slug}`}>
                     {p.title}
                   </Link>
                   <div className="mt-1 text-xs text-muted-foreground">

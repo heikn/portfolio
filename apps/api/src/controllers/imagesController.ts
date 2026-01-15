@@ -15,7 +15,7 @@ export const imagesController = {
     // Stored locally and served via /uploads.
     // IMPORTANT: use an absolute URL so clients hosted on a different origin
     // (e.g. Vite dev server) still fetch images from the API.
-    const baseUrl = `${req.protocol}://${req.get("host")}`
+  const baseUrl = `${req.protocol}://${req.get("host")}`
     const url = `${baseUrl}/uploads/${file.filename}`
 
     // Asset-only create
@@ -92,7 +92,7 @@ export const imagesController = {
     const orderIndex = Number(req.body.order_index ?? 0)
 
   // Stored locally and served via /uploads (absolute URL for cross-origin clients)
-  const baseUrl = `${req.protocol}://${req.get("host")}`
+  const baseUrl = `${req.protocol}://${req.get("host")}/api`
   const url = `${baseUrl}/uploads/${file.filename}`
 
     const image = await projectsService.addImage({

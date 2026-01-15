@@ -17,7 +17,7 @@ function IndexRedirect() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/admin">
         <Routes>
           <Route path="/" element={<IndexRedirect />} />
           <Route path="/login" element={<Login />} />
