@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id               String         @id @default(uuid()) @db.Uuid
+  title            String
+  slug             String         @unique
+  shortDescription String         @map("short_description")
+  description      String
+  keyFeatures      String[]       @map("key_features")
+  type             ProjectType
+  status           ProjectStatus
+  externalUrl      String?        @map("external_url")
+  githubUrl        String?        @map("github_url")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  images           ProjectImage[]
+  tags             ProjectTag[]
+
+  @@map("projects")
+}
+
+model Tag {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String       @unique
+  slug      String       @unique
+  createdAt DateTime     @default(now()) @map("created_at")
+  projects  ProjectTag[]
+
+  @@map("tags")
+}
+
+model ProjectTag {
+  projectId String  @map("project_id") @db.Uuid
+  tagId     String  @map("tag_id") @db.Uuid
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, tagId])
+  @@map("project_tags")
+}
+
+model Image {
+  id        String         @id @default(uuid()) @db.Uuid
+  url       String         @unique
+  createdAt DateTime       @default(now()) @map("created_at")
+  projects  ProjectImage[]
+
+  @@map("images")
+}
+
+model ProjectImage {
+  projectId  String    @map("project_id") @db.Uuid
+  imageId    String    @map("image_id") @db.Uuid
+  type       ImageType
+  altText    String?   @map("alt_text")
+  orderIndex Int       @map("order_index")
+  image      Image     @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, imageId])
+  @@index([projectId])
+  @@index([imageId])
+  @@map("project_images")
+}
+
+enum ProjectType {
+  personal
+  work
+}
+
+enum ProjectStatus {
+  live
+  dev
+  archived
+}
+
+enum ImageType {
+  hero
+  gallery
+  thumbnail
+}
