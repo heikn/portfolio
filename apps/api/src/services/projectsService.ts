@@ -21,7 +21,7 @@ export const projectsService = {
   async listPublic() {
     return prisma.project.findMany({
       where: { status: { in: ["live", "dev"] } },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ orderIndex: "asc" } as any, { createdAt: "desc" }],
       include: {
         tags: { include: { tag: true } },
         images: { orderBy: { orderIndex: "asc" }, include: { image: true } },
@@ -44,6 +44,7 @@ export const projectsService = {
   async create(input: {
     title: string
     slug: string
+    order_index: number
     short_description: string
     description: string
     keyFeatures?: string[]
@@ -57,6 +58,7 @@ export const projectsService = {
       data: {
         title: input.title,
         slug: input.slug,
+        orderIndex: input.order_index,
         shortDescription: input.short_description,
         description: input.description,
         keyFeatures: input.keyFeatures ?? [],
@@ -77,6 +79,7 @@ export const projectsService = {
   async update(id: string, input: {
     title?: string
     slug?: string
+    order_index?: number
     short_description?: string
     description?: string
     keyFeatures?: string[]
@@ -90,6 +93,7 @@ export const projectsService = {
     const data: any = {
       ...(input.title !== undefined ? { title: input.title } : null),
       ...(input.slug !== undefined ? { slug: input.slug } : null),
+      ...(input.order_index !== undefined ? { orderIndex: input.order_index } : null),
       ...(input.short_description !== undefined ? { shortDescription: input.short_description } : null),
       ...(input.description !== undefined ? { description: input.description } : null),
       ...(input.keyFeatures !== undefined ? { keyFeatures: input.keyFeatures } : null),
@@ -182,6 +186,32 @@ export const projectsService = {
     } catch {
       throw new HttpError(404, "Project not found")
     }
+  },
+
+  async reorderProjects(items: { id: string; order_index: number }[]) {
+    const orderIndexes = items.map((it) => it.order_index)
+    const unique = new Set(orderIndexes)
+    if (unique.size !== orderIndexes.length) {
+      throw new HttpError(400, "Duplicate order_index values are not allowed")
+    }
+
+    await prisma.$transaction(
+      items.map((it) =>
+        prisma.project.update({
+          where: { id: it.id },
+          data: { orderIndex: it.order_index } as any,
+        })
+      )
+    )
+
+    return prisma.project.findMany({
+      where: { status: { in: ["live", "dev"] } },
+      orderBy: [{ orderIndex: "asc" } as any, { createdAt: "desc" }],
+      include: {
+        tags: { include: { tag: true } },
+        images: { orderBy: { orderIndex: "asc" }, include: { image: true } },
+      },
+    })
   },
 
   async addImage(input: {

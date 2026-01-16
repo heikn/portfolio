@@ -13,7 +13,7 @@ export default function Header({ theme, toggleTheme }: { theme: string; toggleTh
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-6xl">
         <div className="flex items-center gap-8">
           <Link to="/" className="font-bold text-xl">

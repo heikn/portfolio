@@ -3,6 +3,7 @@ import { z } from "zod"
 export const projectCreateSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
+  order_index: z.number().int(),
   short_description: z.string().min(1),
   description: z.string().min(1),
   key_features: z.array(z.string().min(1)).default([]),

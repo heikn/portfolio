@@ -10,6 +10,7 @@ export const projectQueryKey = (slug: string) => ["projects", slug] as const
 export type ProjectCreateInput = {
   title: string
   slug: string
+  order_index: number
   short_description: string
   description: string
   key_features?: string[]
@@ -21,6 +22,19 @@ export type ProjectCreateInput = {
 }
 
 export type ProjectUpdateInput = Partial<ProjectCreateInput>
+
+export function useReorderProjects() {
+  const qc = useQueryClient()
+  return useMutation<Project[], Error, { items: { id: string; order_index: number }[] }>({
+    mutationFn: async ({ items }) => {
+      return api.put("projects/reorder", { json: { items } }).json<Project[]>()
+    },
+    onSuccess: async () => {
+      toast.success("Project order updated")
+      await qc.invalidateQueries({ queryKey: projectsQueryKey })
+    },
+  })
+}
 
 export function useProjects() {
   return useQuery<Project[], Error>({

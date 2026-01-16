@@ -54,6 +54,15 @@ const createProjectImageByUrlSchema = z.object({
   order_index: z.number().int().optional(),
 })
 
+const reorderProjectsSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string().uuid(),
+      order_index: z.number().int(),
+    })
+  ),
+})
+
 
 // Public
 projectsRouter.get("/", asyncHandler(projectsController.list))
@@ -65,6 +74,14 @@ projectsRouter.post(
   requireAdmin,
   validateBody(projectCreateSchema),
   asyncHandler(projectsController.create)
+)
+
+// Reorder projects (Admin)
+projectsRouter.put(
+  "/reorder",
+  requireAdmin,
+  validateBody(reorderProjectsSchema),
+  asyncHandler(projectsController.reorder)
 )
 projectsRouter.put(
   "/:id",

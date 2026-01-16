@@ -95,7 +95,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-muted overflow-hidden">
                 <img
                   src={selfie}

@@ -11,6 +11,7 @@ model Project {
   id               String         @id @default(uuid()) @db.Uuid
   title            String
   slug             String         @unique
+  orderIndex       Int            @map("order_index")
   shortDescription String         @map("short_description")
   description      String
   keyFeatures      String[]       @map("key_features")
@@ -23,6 +24,7 @@ model Project {
   images           ProjectImage[]
   tags             ProjectTag[]
 
+  @@unique([orderIndex])
   @@map("projects")
 }
 

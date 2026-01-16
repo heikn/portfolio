@@ -39,6 +39,7 @@ export type Project = {
   id: string
   title: string
   slug: string
+  orderIndex: number
   shortDescription: string
   description: string
   keyFeatures: string[]
