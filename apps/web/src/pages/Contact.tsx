@@ -11,7 +11,7 @@ import {
 import { Mail, Linkedin, Send } from "lucide-react"
 import { useSendContactMessage } from "@/lib/hooks/useSendContactMessage"
 
-const EMAIL = "heikki.nieminen@example.com"
+const EMAIL = "heikki@heikn.tech"
 const LINKEDIN_URL = "https://www.linkedin.com/in/heikki-nieminen/"
 
 export default function Contact() {

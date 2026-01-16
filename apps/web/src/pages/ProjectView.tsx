@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom"
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Github, ExternalLink } from "lucide-react"
+import { ArrowLeft, Github, ExternalLink, ChevronDown } from "lucide-react"
 import { useProject } from "@/lib/hooks/useProject"
 import { getProjectGalleryImages, getProjectTagNames } from "@/lib/projectSelectors"
 
@@ -24,6 +24,7 @@ export default function ProjectView() {
   const { data: project, isLoading, isError, error } = useProject(projectId)
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [isTechnicalDetailsOpen, setIsTechnicalDetailsOpen] = useState(false)
 
   const galleryImages = useMemo(() => {
     if (!project) return []
@@ -204,9 +205,9 @@ export default function ProjectView() {
               </span>
             ) : null}
           </div>
-          <p className="text-xl text-muted-foreground mb-6">
-            {project.description ?? project.shortDescription ?? ""}
-          </p>
+          {project.shortDescription ? (
+            <p className="text-xl text-muted-foreground mb-6">{project.shortDescription}</p>
+          ) : null}
           
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-4">
@@ -299,6 +300,34 @@ export default function ProjectView() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Technical details & architecture */}
+        {project.description ? (
+          <Card className="mb-12">
+            <CardContent className="pt-6">
+              <button
+                type="button"
+                className="w-full flex items-center justify-between gap-4 text-left"
+                aria-expanded={isTechnicalDetailsOpen}
+                onClick={() => setIsTechnicalDetailsOpen((v) => !v)}
+              >
+                <h2 className="text-2xl font-bold">Technical details &amp; architecture</h2>
+                <ChevronDown
+                  className={`h-5 w-5 text-muted-foreground transition-transform ${
+                    isTechnicalDetailsOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {isTechnicalDetailsOpen ? (
+                <div className="mt-4">
+                  <p className="text-muted-foreground whitespace-pre-line">{project.description}</p>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        ) : null}
 
         {/* CTA Section */}
         <Card className="bg-muted/50">
